@@ -608,17 +608,61 @@ function QueriesView({ postgres }: { postgres: PostgresSnapshot }) {
   if (!postgres.available) {
     return <EmptySource title="Query statistics are unavailable" message={postgres.notices[0]} />;
   }
-  if (!postgres.slowQueries?.length) {
-    const missingExtension = postgres.notices.some((notice) =>
-      notice.includes("pg_stat_statements"),
+
+  const missingExtension = postgres.notices.some((notice) =>
+    notice.includes("pg_stat_statements"),
+  );
+
+  if (missingExtension) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Enable query analytics</CardTitle>
+          <CardDescription>
+            This tab needs the pg_stat_statements extension on the Postgres database in DATABASE_URL. Observer only reads that data. It never installs extensions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <ol className="space-y-4 text-sm leading-6 text-slate-600 dark:text-slate-400">
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                1
+              </span>
+              <span>
+                Open your <span className="font-semibold text-slate-900 dark:text-slate-100">Postgres</span> service in Railway (the one wired to DATABASE_URL), not the Observer service.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                2
+              </span>
+              <span>Open a SQL session on that Postgres service and run this command once:</span>
+            </li>
+          </ol>
+          <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-xs leading-6 text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
+            CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+          </pre>
+          <ol className="space-y-4 text-sm leading-6 text-slate-600 dark:text-slate-400" start={3}>
+            <li className="flex gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600 text-xs font-semibold text-white">
+                3
+              </span>
+              <span>Come back here and refresh. After your apps run queries against that database, statement stats appear in this table.</span>
+            </li>
+          </ol>
+          <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
+            If the command fails, your Postgres image may not load pg_stat_statements yet. On Railway managed Postgres it is usually already available and the CREATE EXTENSION step is enough.
+          </p>
+        </CardContent>
+      </Card>
     );
+  }
+
+  if (!postgres.slowQueries?.length) {
     return (
       <EmptySource
-        title={missingExtension ? "Query analytics need one setup step" : "No statements recorded yet"}
-        message={
-          postgres.notices.find((notice) => notice.includes("pg_stat_statements")) ||
-          "pg_stat_statements is enabled, but Postgres has not recorded any statements yet. Run traffic against the database, then refresh."
-        }
+        title="No statements recorded yet"
+        message="pg_stat_statements is enabled, but Postgres has not recorded any statements yet. Run traffic against the database, then refresh."
       />
     );
   }
