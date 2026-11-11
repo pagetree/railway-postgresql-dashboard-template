@@ -1,4 +1,4 @@
-# Deploy and Host Postgres Observer on Railway
+﻿# Deploy and Host Postgres Observer on Railway
 
 A deployable Railway dashboard for infrastructure and PostgreSQL telemetry.
 
@@ -10,7 +10,7 @@ PostgreSQL data includes database size, connection use, cache hit ratio, commits
 
 ## Why Deploy Postgres Observer on Railway?
 
-Postgres Observer combines Railway infrastructure metrics and PostgreSQL statistics in one private dashboard. It connects to the PostgreSQL database already running in your Railway project and keeps credentials in server variables.
+Postgres Observer combines Railway infrastructure metrics and PostgreSQL statistics in one private dashboard. Deploy the Observer into a project that already has PostgreSQL, then connect the database URL after deploy.
 
 ## Common Use Cases
 
@@ -20,25 +20,21 @@ Monitor CPU, memory, network, disk, backups, deployments, database connections, 
 
 ### Deployment Dependencies
 
-The template deploys only the Observer service. It connects to an existing PostgreSQL service.
+The template deploys only the Observer service. It expects an existing PostgreSQL service in the same Railway project.
 
 ## Railway Template Configuration
 
-The deployer provides two connections:
+The deployer provides one value at deploy time:
 
-1. `DATABASE_URL`
-
-   What it is: The connection string for the PostgreSQL database that is already running.
-
-   Where to find it: Open the existing PostgreSQL service in Railway, select Variables, and reference its `DATABASE_URL`. A typical reference is `${{Postgres.DATABASE_URL}}`, with `Postgres` replaced by the actual service name.
-
-2. `RAILWAY_PROJECT_TOKEN`
+1. `RAILWAY_PROJECT_TOKEN`
 
    What it is: A project scoped token that lets Observer read CPU, RAM, network, storage, service, and deployment metrics from Railway.
 
    Where to find it: Open the Railway project, select Project Settings, select Tokens, create a token for the environment being observed, then paste its value here.
 
-The template generates `DASHBOARD_PASSWORD` automatically as a secret. Deployers do not enter project IDs, environment IDs, or a dashboard password.
+After deploy, open the Observer service Variables and set `DATABASE_URL` to a reference of your existing PostgreSQL service, for example `${{Postgres.DATABASE_URL}}`.
+
+The template generates `DASHBOARD_PASSWORD` automatically as a secret. Deployers do not enter a database URL, project IDs, environment IDs, or a dashboard password during deploy.
 
 The dashboard sends Railway credentials only from the server. Tokens and database credentials are never returned to the browser.
 
