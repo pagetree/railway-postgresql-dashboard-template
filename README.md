@@ -10,7 +10,7 @@ PostgreSQL data includes database size, connection use, cache hit ratio, commits
 
 ## Why Deploy Postgres Observer on Railway?
 
-Postgres Observer combines Railway infrastructure metrics and PostgreSQL statistics in one private dashboard. Railway hosts the dashboard beside its database, wires the internal database connection, manages deployment health checks, and keeps credentials in server variables.
+Postgres Observer combines Railway infrastructure metrics and PostgreSQL statistics in one private dashboard. It connects to the PostgreSQL database already running in your Railway project and keeps credentials in server variables.
 
 ## Common Use Cases
 
@@ -20,15 +20,16 @@ Monitor CPU, memory, network, disk, backups, deployments, database connections, 
 
 ### Deployment Dependencies
 
-The template includes the dashboard service and PostgreSQL. The deployer supplies one project scoped Railway token.
+The template deploys only the Observer service. It connects to an existing PostgreSQL service.
 
 ## Railway Template Configuration
 
-The deployer enters only one value:
+The deployer provides two connections:
 
-1. `RAILWAY_PROJECT_TOKEN`: A project token scoped to the environment being observed.
+1. `DATABASE_URL`: A reference to the existing PostgreSQL service, such as `${{Postgres.DATABASE_URL}}`.
+2. `RAILWAY_PROJECT_TOKEN`: A project token scoped to the environment being observed.
 
-The template wires `DATABASE_URL` to `${{Postgres.DATABASE_URL}}` and generates `DASHBOARD_PASSWORD` automatically as a secret. Deployers do not enter a database URL, project ID, environment ID, or dashboard password.
+The template generates `DASHBOARD_PASSWORD` automatically as a secret. Deployers do not enter project IDs, environment IDs, or a dashboard password.
 
 The dashboard sends Railway credentials only from the server. Tokens and database credentials are never returned to the browser.
 
