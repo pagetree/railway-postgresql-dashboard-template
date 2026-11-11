@@ -445,18 +445,20 @@ function DatabaseOverview({ postgres }: { postgres: PostgresSnapshot }) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Database counters</CardTitle>
-            <CardDescription>Values accumulated by PostgreSQL since statistics were reset</CardDescription>
+            <CardTitle>Query traffic</CardTitle>
+            <CardDescription>
+              Totals for the single Postgres database in DATABASE_URL only (not your whole Railway account, not other projects). Counts rise every time a query runs, from when this database started counting until now. These are not how many rows are stored. Stored size and live rows are in the tables section.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <dl className="divide-y divide-slate-200 text-sm dark:divide-slate-800">
               {[
-                ["Rows returned", compact(overview.tuplesReturned)],
-                ["Rows fetched", compact(overview.tuplesFetched)],
-                ["Rows inserted", compact(overview.tuplesInserted)],
-                ["Rows updated", compact(overview.tuplesUpdated)],
-                ["Rows deleted", compact(overview.tuplesDeleted)],
-                ["Temporary data", bytes(overview.tempBytes)],
+                ["Rows scanned by queries", compact(overview.tuplesReturned)],
+                ["Rows read by queries", compact(overview.tuplesFetched)],
+                ["Rows inserted by queries", compact(overview.tuplesInserted)],
+                ["Rows updated by queries", compact(overview.tuplesUpdated)],
+                ["Rows deleted by queries", compact(overview.tuplesDeleted)],
+                ["Temp files written", bytes(overview.tempBytes)],
                 ["Deadlocks", compact(overview.deadlocks)],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-center justify-between gap-5 py-3">
