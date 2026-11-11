@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { discoverPostgresUrl } from "@/lib/railway";
 
 export type PostgresSnapshot = {
   available: boolean;
@@ -60,9 +61,11 @@ export type PostgresSnapshot = {
 
 let pool: Pool | undefined;
 
-function getPool() {
+async function getPool() {
   const connectionString =
-    process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    (await discoverPostgresUrl());
   if (!connectionString) return null;
 
   pool ||= new Pool({
@@ -80,11 +83,13 @@ function getPool() {
 }
 
 export async function getPostgresSnapshot(): Promise<PostgresSnapshot> {
-  const databasePool = getPool();
+  const databasePool = await getPool();
   if (!databasePool) {
     return {
       available: false,
-      notices: ["Add DATABASE_URL to enable PostgreSQL telemetry."],
+      notices: [
+        "No existing PostgreSQL service with DATABASE_URL was found in this Railway environment.",
+      ],
     };
   }
 

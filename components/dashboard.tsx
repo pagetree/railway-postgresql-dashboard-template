@@ -381,7 +381,7 @@ function DatabaseOverview({ postgres }: { postgres: PostgresSnapshot }) {
     return (
       <EmptySource
         title="PostgreSQL is not connected"
-        message={postgres.notices[0] || "Add DATABASE_URL to read database telemetry."}
+        message={postgres.notices[0] || "No existing PostgreSQL service was discovered in this environment."}
       />
     );
   }
@@ -902,16 +902,16 @@ export function Dashboard() {
             {payload.railway ? <Infrastructure railway={payload.railway} /> : <EmptySource title="Railway metrics are unavailable" message={payload.sourceErrors.railway || "Configure Railway API access to load infrastructure metrics."} />}
           </TabsContent>
           <TabsContent value="database">
-            {payload.postgres ? <DatabaseOverview postgres={payload.postgres} /> : <EmptySource title="PostgreSQL metrics are unavailable" message={payload.sourceErrors.postgres || "Configure DATABASE_URL to load database metrics."} />}
+            {payload.postgres ? <DatabaseOverview postgres={payload.postgres} /> : <EmptySource title="PostgreSQL metrics are unavailable" message={payload.sourceErrors.postgres || "No existing PostgreSQL service was discovered in this environment."} />}
           </TabsContent>
           <TabsContent value="deployments">
             {payload.railway ? <DeploymentsView railway={payload.railway} /> : <EmptySource title="Deployments are unavailable" message={payload.sourceErrors.railway || "Configure Railway API access to load deployments."} />}
           </TabsContent>
           <TabsContent value="tables">
-            {payload.postgres ? <TablesView postgres={payload.postgres} /> : <EmptySource title="Tables are unavailable" message={payload.sourceErrors.postgres || "Configure DATABASE_URL to load table statistics."} />}
+            {payload.postgres ? <TablesView postgres={payload.postgres} /> : <EmptySource title="Tables are unavailable" message={payload.sourceErrors.postgres || "No existing PostgreSQL service was discovered in this environment."} />}
           </TabsContent>
           <TabsContent value="queries">
-            {payload.postgres ? <QueriesView postgres={payload.postgres} /> : <EmptySource title="Queries are unavailable" message={payload.sourceErrors.postgres || "Configure DATABASE_URL to load statement statistics."} />}
+            {payload.postgres ? <QueriesView postgres={payload.postgres} /> : <EmptySource title="Queries are unavailable" message={payload.sourceErrors.postgres || "No existing PostgreSQL service was discovered in this environment."} />}
           </TabsContent>
         </Tabs>
       </div>

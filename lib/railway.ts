@@ -89,6 +89,57 @@ async function resolveScope() {
   return result.data.projectToken;
 }
 
+export async function discoverPostgresUrl() {
+  const { projectId, environmentId } = await resolveScope();
+  const project = await railwayQuery<{
+    project: {
+      services: { edges: Array<{ node: { id: string; name: string } }> };
+    };
+  }>(
+    `query DatabaseServices($projectId: String!) {
+      project(id: $projectId) {
+        services { edges { node { id name } } }
+      }
+    }`,
+    { projectId },
+  );
+
+  const currentServiceId = process.env.RAILWAY_SERVICE_ID;
+  const candidates = project.data.project.services.edges.filter(
+    ({ node }) => node.id !== currentServiceId,
+  );
+
+  const servicesWithVariables = await Promise.all(
+    candidates.map(async ({ node }) => {
+      const result = await railwayQuery<{
+        variables: Record<string, string>;
+      }>(
+        `query DatabaseVariables(
+          $projectId: String!
+          $environmentId: String!
+          $serviceId: String!
+        ) {
+          variables(
+            projectId: $projectId
+            environmentId: $environmentId
+            serviceId: $serviceId
+          )
+        }`,
+        { projectId, environmentId, serviceId: node.id },
+      );
+      return { service: node, variables: result.data.variables };
+    }),
+  );
+
+  const database = servicesWithVariables.find(
+    ({ variables }) => variables.DATABASE_URL || variables.POSTGRES_URL,
+  );
+
+  return database
+    ? database.variables.DATABASE_URL || database.variables.POSTGRES_URL
+    : null;
+}
+
 const PROJECT_QUERY = `
   query DashboardProject($projectId: String!) {
     project(id: $projectId) {
