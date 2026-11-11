@@ -26,8 +26,17 @@ The template deploys only the Observer service. It connects to an existing Postg
 
 The deployer provides two connections:
 
-1. `DATABASE_URL`: A reference to the existing PostgreSQL service, such as `${{Postgres.DATABASE_URL}}`.
-2. `RAILWAY_PROJECT_TOKEN`: A project token scoped to the environment being observed.
+1. `DATABASE_URL`
+
+   What it is: The connection string for the PostgreSQL database that is already running.
+
+   Where to find it: Open the existing PostgreSQL service in Railway, select Variables, and reference its `DATABASE_URL`. A typical reference is `${{Postgres.DATABASE_URL}}`, with `Postgres` replaced by the actual service name.
+
+2. `RAILWAY_PROJECT_TOKEN`
+
+   What it is: A project scoped token that lets Observer read CPU, RAM, network, storage, service, and deployment metrics from Railway.
+
+   Where to find it: Open the Railway project, select Project Settings, select Tokens, create a token for the environment being observed, then paste its value here.
 
 The template generates `DASHBOARD_PASSWORD` automatically as a secret. Deployers do not enter project IDs, environment IDs, or a dashboard password.
 
