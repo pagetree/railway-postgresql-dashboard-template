@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { publicUrl } from "@/lib/public-url";
 
 async function digest(value: string) {
   const bytes = new TextEncoder().encode(value);
@@ -11,7 +12,7 @@ async function digest(value: string) {
 export async function middleware(request: NextRequest) {
   const password = process.env.DASHBOARD_PASSWORD;
   if (!password) {
-    const setupUrl = new URL("/login", request.url);
+    const setupUrl = publicUrl(request, "/login");
     setupUrl.searchParams.set("config", "missing");
     return NextResponse.redirect(setupUrl);
   }
@@ -20,7 +21,7 @@ export async function middleware(request: NextRequest) {
   const session = request.cookies.get("observer_session")?.value;
   if (session === expected) return NextResponse.next();
 
-  const loginUrl = new URL("/login", request.url);
+  const loginUrl = publicUrl(request, "/login");
   loginUrl.searchParams.set("next", request.nextUrl.pathname);
   return NextResponse.redirect(loginUrl);
 }

@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { publicUrl } from "@/lib/public-url";
 
 function hash(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -22,24 +23,24 @@ export async function POST(request: NextRequest) {
   const destination = nextPath.startsWith("/") ? nextPath : "/";
 
   if (!expected || !safeMatch(hash(supplied), hash(expected))) {
-    const failure = new URL("/login", request.url);
+    const failure = publicUrl(request, "/login");
     failure.searchParams.set("error", "1");
     failure.searchParams.set("next", destination);
     return NextResponse.redirect(failure, 303);
   }
 
-  const response = NextResponse.redirect(new URL(destination, request.url), 303);
+  const response = NextResponse.redirect(publicUrl(request, destination), 303);
   response.cookies.set("observer_session", hash(expected), {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: true,
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 12,
   });
   return response;
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   const response = NextResponse.json({ ok: true });
   response.cookies.set("observer_session", "", {
     httpOnly: true,
