@@ -196,7 +196,7 @@ export async function getPostgresSnapshot(): Promise<PostgresSnapshot> {
       }));
     } catch {
       notices.push(
-        "Query analytics require the pg_stat_statements extension and sufficient database privileges.",
+        "This view needs the pg_stat_statements extension on the Postgres database in DATABASE_URL. Open a SQL session on that Postgres service (not on Observer) and run: CREATE EXTENSION IF NOT EXISTS pg_stat_statements; Then open this tab again. Observer never creates extensions for you.",
       );
     }
 

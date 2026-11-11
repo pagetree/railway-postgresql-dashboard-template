@@ -609,10 +609,16 @@ function QueriesView({ postgres }: { postgres: PostgresSnapshot }) {
     return <EmptySource title="Query statistics are unavailable" message={postgres.notices[0]} />;
   }
   if (!postgres.slowQueries?.length) {
+    const missingExtension = postgres.notices.some((notice) =>
+      notice.includes("pg_stat_statements"),
+    );
     return (
       <EmptySource
-        title="No query analytics available"
-        message={postgres.notices[0] || "No statements have been recorded yet."}
+        title={missingExtension ? "Query analytics need one setup step" : "No statements recorded yet"}
+        message={
+          postgres.notices.find((notice) => notice.includes("pg_stat_statements")) ||
+          "pg_stat_statements is enabled, but Postgres has not recorded any statements yet. Run traffic against the database, then refresh."
+        }
       />
     );
   }
