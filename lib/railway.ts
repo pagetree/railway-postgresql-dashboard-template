@@ -272,12 +272,14 @@ export async function getRailwaySnapshot(
   );
 
   const startDate = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+  const sampleRateSeconds =
+    hours <= 6 ? 60 : hours <= 24 ? 300 : hours <= 168 ? 1800 : hours <= 720 ? 3600 : 7200;
   const metricsResult = await railwayQuery<{ metrics: MetricSeries[] }>(
     METRICS_QUERY,
     {
       environmentId,
       startDate,
-      sampleRateSeconds: hours <= 6 ? 60 : hours <= 24 ? 300 : 1800,
+      sampleRateSeconds,
       measurements: [
         "CPU_USAGE",
         "CPU_LIMIT",

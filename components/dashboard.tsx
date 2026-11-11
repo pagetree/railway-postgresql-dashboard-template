@@ -49,6 +49,10 @@ const ranges = [
   { label: "6 hours", value: 6 },
   { label: "24 hours", value: 24 },
   { label: "7 days", value: 168 },
+  { label: "30 days", value: 720 },
+  { label: "60 days", value: 1440 },
+  { label: "90 days", value: 2160 },
+  { label: "All time", value: 8760 },
 ];
 
 function bytes(value: number | null | undefined) {

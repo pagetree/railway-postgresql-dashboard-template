@@ -6,7 +6,7 @@ import { getRailwaySnapshot } from "@/lib/railway";
 export const dynamic = "force-dynamic";
 
 const querySchema = z.object({
-  hours: z.coerce.number().int().min(1).max(168).default(24),
+  hours: z.coerce.number().int().min(1).max(8760).default(24),
 });
 
 export async function GET(request: NextRequest) {
